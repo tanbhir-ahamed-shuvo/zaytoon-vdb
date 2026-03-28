@@ -4,11 +4,9 @@ services:
     env: php
     plan: free
     buildCommand: |
-      composer install --no-dev
-      npm install
-      npm run build
+      composer install --no-dev --optimize-autoloader
       php artisan storage:link
-    startCommand: php artisan serve --host=0.0.0.0 --port=$PORT
+    startCommand: php -r "file_exists('database/database.sqlite') || touch('database/database.sqlite');" && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT
     numInstances: 1
     envVars:
       - key: APP_ENV
@@ -17,3 +15,5 @@ services:
         value: false
       - key: LOG_CHANNEL
         value: stderr
+      - key: DB_CONNECTION
+        value: sqlite
