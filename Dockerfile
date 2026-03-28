@@ -16,18 +16,15 @@ RUN apk add --no-cache \
     freetype-dev \
     libjpeg-turbo-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install dom \
+    && docker-php-ext-install xml xmlwriter simplexml xmlreader \
     && docker-php-ext-install \
     bcmath \
-    dom \
     gd \
     intl \
     mbstring \
     pdo \
     pdo_sqlite \
-    simplexml \
-    xml \
-    xmlreader \
-    xmlwriter \
     zip
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
