@@ -1,82 +1,38 @@
-# Deployment Guide: Zaytoon VDB to Render (Free)
+# Deployment Guide: Zaytoon VDB on Render Free
 
-## Step 1: Push to GitHub
+This project now deploys with Docker so Render does not depend on the platform runtime type.
 
-1. Go to [GitHub.com](https://github.com) and sign in (create account if needed)
-2. Click **New** to create a new repository
-3. Name it: `zaytoon-vdb`
-4. Choose **Public** (required for free tier)
-5. Click **Create repository**
-6. Copy the repository URL (should look like: `https://github.com/YOUR_USERNAME/zaytoon-vdb.git`)
+## 1) Push latest code
 
-Then run in terminal:
 ```bash
-cd d:\Zaytoon(new)\zaytoon-vdb\zaytoon-vdb
-git remote add origin https://github.com/YOUR_USERNAME/zaytoon-vdb.git
-git branch -M main
-git push -u origin main
+git push
 ```
 
-## Step 2: Deploy on Render
+## 2) Create service from Blueprint
 
-1. Go to [Render.com](https://render.com) and sign up with GitHub
-2. Click **New +** → **Web Service**
-3. Select **Connect a repository** → Find your `zaytoon-vdb` repo
-4. Configure:
-   - **Name**: `zaytoon-vdb`
-   - **Environment**: `PHP`
-   - **Build Command**: 
-     ```
-     composer install --no-dev && npm install && npm run build && php artisan storage:link
-     ```
-   - **Start Command**: 
-     ```
-     php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT
-     ```
-   - **Plan**: `Free`
+1. Open Render dashboard.
+2. If you already created a failing Web Service, delete it first.
+3. Click New +, then Blueprint.
+4. Select your repository: zaytoon-vdb.
+5. Render will read render.yaml and create a Docker Web Service.
 
-5. Click **Create Web Service**
+## 3) Set required environment values
 
-## Step 3: Add Environment Variables
+In the created service, open Environment and set:
 
-In Render dashboard:
-1. Go to your service → **Environment**
-2. Add these variables:
+APP_KEY=your-base64-key
+APP_URL=https://your-service-name.onrender.com
 
-```
-APP_DEBUG=false
-APP_ENV=production
-LOG_CHANNEL=stderr
-APP_KEY=base64:YOUR_GENERATED_KEY_HERE
-SESSION_DRIVER=cookie
-```
+Other env values are already provided in render.yaml.
 
-**Note**: Get APP_KEY by running locally:
-```bash
-php artisan key:generate --show
-```
+## 4) Deploy
 
-## Step 4: Deploy
+1. Trigger deploy (or it starts automatically after Blueprint creation).
+2. Wait for build and start to complete.
+3. Open the Render URL.
 
-1. Push any changes: `git push`
-2. Render auto-deploys when you push to GitHub
-3. Check deployment status in Render dashboard
-4. Your app will be available at: `https://zaytoon-vdb.onrender.com` (or similar)
+## Notes
 
-## Troubleshooting
-
-- **Build fails**: Check logs in Render dashboard
-- **Database not working**: SQLite is stored in container (data resets on redeploy)
-  - Solution: Use PostgreSQL (free tier available on Render)
-- **Static files missing**: Ensure migrations ran successfully
-
-## Database Migration (Optional: Use PostgreSQL for persistence)
-
-If you want persistent database:
-1. Create PostgreSQL database on Render (free tier)
-2. Update `.env` variables for PostgreSQL instead of SQLite
-3. Redeploy
-
-## Questions?
-
-Check: [Render PHP Docs](https://render.com/docs/deploy-php)
+- This setup uses SQLite for free deployment simplicity.
+- SQLite data on free web instances is ephemeral. Data can reset on redeploy or restart.
+- For persistent data, move to Render PostgreSQL and update DB env vars.

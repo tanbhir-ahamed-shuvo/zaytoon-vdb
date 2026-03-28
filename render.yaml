@@ -1,19 +1,29 @@
 services:
   - type: web
     name: zaytoon-vdb
-    env: php
+    env: docker
     plan: free
-    buildCommand: |
-      composer install --no-dev --optimize-autoloader
-      php artisan storage:link
-    startCommand: php -r "file_exists('database/database.sqlite') || touch('database/database.sqlite');" && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
     numInstances: 1
     envVars:
+      - key: APP_NAME
+        value: Zaytoon VDB
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
         value: false
       - key: LOG_CHANNEL
         value: stderr
+      - key: APP_URL
+        sync: false
+      - key: APP_KEY
+        sync: false
       - key: DB_CONNECTION
         value: sqlite
+      - key: SESSION_DRIVER
+        value: cookie
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: sync
