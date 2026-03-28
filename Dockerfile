@@ -2,29 +2,26 @@ FROM php:8.3-cli-alpine AS base
 
 WORKDIR /var/www/html
 
+COPY --from=ghcr.io/mlocati/php-extension-installer:latest /usr/bin/install-php-extensions /usr/local/bin/
+
 RUN apk add --no-cache \
     bash \
     curl \
     git \
     sqlite \
-    sqlite-dev \
-    libzip-dev \
-    oniguruma-dev \
-    icu-dev \
-    libxml2-dev \
-    libpng-dev \
-    freetype-dev \
-    libjpeg-turbo-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install dom \
-    && docker-php-ext-install xml xmlwriter simplexml xmlreader \
-    && docker-php-ext-install \
+    sqlite-dev
+
+RUN install-php-extensions \
     bcmath \
+    dom \
     gd \
     intl \
     mbstring \
-    pdo \
     pdo_sqlite \
+    simplexml \
+    xml \
+    xmlreader \
+    xmlwriter \
     zip
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
