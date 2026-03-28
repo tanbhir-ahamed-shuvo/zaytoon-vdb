@@ -24,15 +24,13 @@ RUN apk add --no-cache \
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
-
 COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
 
-RUN npm run build \
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts \
+    && npm run build \
     && php artisan storage:link || true \
     && php artisan config:clear \
     && php artisan route:clear \
