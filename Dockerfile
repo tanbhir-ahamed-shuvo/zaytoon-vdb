@@ -43,4 +43,4 @@ COPY --from=frontend /app/public/build ./public/build
 
 EXPOSE 10000
 
-CMD ["sh", "-c", "mkdir -p database storage/framework/{cache,sessions,views} storage/logs && touch database/database.sqlite && php artisan storage:link || true && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
+CMD ["sh", "-c", "mkdir -p database storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache && touch database/database.sqlite && chmod -R 775 storage bootstrap/cache && php artisan package:discover --ansi && php artisan storage:link || true && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
