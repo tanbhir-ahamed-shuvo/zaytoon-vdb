@@ -43,4 +43,4 @@ COPY --from=frontend /app/public/build ./public/build
 
 EXPOSE 10000
 
-CMD ["sh", "-c", "mkdir -p database storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache && touch database/database.sqlite && chmod -R 775 storage bootstrap/cache && if [ -z \"$APP_URL\" ]; then export APP_URL=https://${RENDER_EXTERNAL_HOSTNAME:-localhost}; fi && php artisan package:discover --ansi && php artisan storage:link || true && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
+CMD ["sh", "-c", "mkdir -p database storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache && touch database/database.sqlite && chmod -R 775 storage bootstrap/cache && if [ -z \"$APP_URL\" ] || ! echo \"$APP_URL\" | grep -Eq '^https?://[A-Za-z0-9.-]+(:[0-9]+)?$'; then export APP_URL=https://${RENDER_EXTERNAL_HOSTNAME:-localhost}; fi && php artisan package:discover --ansi && (php artisan storage:link || true) && php artisan migrate --force && php -S 0.0.0.0:${PORT:-10000} -t public public/index.php"]
